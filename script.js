@@ -3,7 +3,115 @@ let prizes = [];
 let isSpinning = false;
 let currentRotation = 0;
 let lastWinner = null;
+let currentLanguage = "en";
 
+// Language translations
+const translations = {
+  th: {
+    wheelTitle: "🎡 วงล้อสุ่มรางวัล",
+    manageTitle: "⚙️ จัดการรางวัล",
+    spinButton: "🎯 หมุนวงล้อ",
+    spinButtonSpinning: "🎡 กำลังหมุน...",
+    spinButtonSelecting: "🎯 เลือกรางวัลเดียวที่เหลือ...",
+    spinButtonNoMore: "❌ รางวัลหมดแล้ว",
+    spinButtonFinal: "🎯 เลือกรางวัลสุดท้าย",
+    clickToStart: 'คลิกปุ่ม "หมุนวงล้อ" เพื่อเริ่มเล่น!',
+    addPrizeTitle: "เพิ่มรางวัลใหม่",
+    prizeName: "ชื่อรางวัล:",
+    prizeNamePlaceholder: "กรุณาใส่ชื่อรางวัล",
+    quantity: "จำนวน:",
+    quantityPlaceholder: "จำนวน",
+    addButton: "➕ เพิ่มรางวัล",
+    prizeListTitle: "📋 รายการรางวัลทั้งหมด",
+    noPrives: "ยังไม่มีรางวัล",
+    addPrizeToStart: "เพิ่มรางวัลใหม่เพื่อเริ่มใช้งานวงล้อ",
+    congrats: "🎉 ยินดีด้วย! 🎉",
+    congratsText: "รางวัลของคุณ",
+    congratsSubtext: "คุณได้รับรางวัลแล้ว!",
+    closeButton: "✨ ปิด",
+    deleteButton: "🗑️ ลบ",
+    noRewards: "ไม่มีรางวัล",
+    noRewardsAvailable: "รางวัลหมดแล้ว",
+    addQuantity: "เพิ่มจำนวนรางวัล",
+    spinAgain: "🎯 หมุนวงล้อเพื่อรับรางวัลใหม่! 🎉",
+    selectReward: "🎯 ได้รับ",
+    remaining: "คงเหลือ:",
+    outOf: "จาก",
+    outOfStock: "(หมด)",
+    backButton: "← กลับ",
+    noPrizesWheel: "ไม่มีรางวัล",
+    allPrizesGone: "รางวัลหมดแล้ว",
+    onePrizeLeft: "🎯 เหลือรางวัลเดียว! การหมุนจะได้รางวัลนี้อัตโนมัติ",
+    allPrizesGoneWarning: "⚠️ รางวัลทั้งหมดหมดแล้ว! กรุณาเพิ่มจำนวนรางวัล",
+  },
+  en: {
+    wheelTitle: "🎡 Spin Wheel",
+    manageTitle: "⚙️ Manage Prizes",
+    spinButton: "🎯 Spin Wheel",
+    spinButtonSpinning: "🎡 Spinning...",
+    spinButtonSelecting: "🎯 Selecting Last Prize...",
+    spinButtonNoMore: "❌ No Prizes Left",
+    spinButtonFinal: "🎯 Select Last Prize",
+    clickToStart: 'Click "Spin Wheel" button to start playing!',
+    addPrizeTitle: "Add New Prize",
+    prizeName: "Prize Name:",
+    prizeNamePlaceholder: "Enter prize name",
+    quantity: "Quantity:",
+    quantityPlaceholder: "Quantity",
+    addButton: "➕ Add Prize",
+    prizeListTitle: "📋 All Prizes",
+    noPrives: "No Prizes",
+    addPrizeToStart: "Add a new prize to start using the wheel",
+    congrats: "🎉 Congratulations! 🎉",
+    congratsText: "Your Prize",
+    congratsSubtext: "You won!",
+    closeButton: "✨ Close",
+    deleteButton: "🗑️ Delete",
+    noRewards: "No Rewards",
+    noRewardsAvailable: "All prizes are gone",
+    addQuantity: "Add prize quantity",
+    spinAgain: "🎯 Spin the wheel to get a new prize! 🎉",
+    selectReward: "🎯 You Got",
+    remaining: "Remaining:",
+    outOf: "of",
+    outOfStock: "(Out)",
+    backButton: "← Back",
+    noPrizesWheel: "No Prizes",
+    allPrizesGone: "All prizes are gone",
+    onePrizeLeft: "🎯 Only one prize left! Spin will select it automatically",
+    allPrizesGoneWarning: "⚠️ All prizes are gone! Please add more quantities",
+  },
+};
+
+function t(key) {
+  return translations[currentLanguage][key] || key;
+}
+
+function toggleLanguage() {
+  currentLanguage = currentLanguage === "th" ? "en" : "th";
+  const btn = document.getElementById("lang-toggle");
+  btn.textContent = currentLanguage === "th" ? "TH" : "EN";
+  updatePageLanguage();
+}
+
+function updatePageLanguage() {
+  // Update navigation buttons
+  const navBtns = document.querySelectorAll(".nav-btn");
+  if (navBtns[0]) navBtns[0].textContent = t("manageTitle");
+
+  // Update spin button
+  const spinBtn = document.getElementById("spin-btn");
+  if (spinBtn) {
+    if (spinBtn.disabled) {
+      if (spinBtn.textContent.includes("ปิด") || spinBtn.textContent.includes("No Prizes")) {
+        spinBtn.textContent = t("spinButtonNoMore");
+      }
+    } else if (spinBtn.textContent.includes("เลือก") || spinBtn.textContent.includes("Select")) {
+      spinBtn.textContent = t("spinButtonFinal");
+    } else {
+      spinBtn.textContent = t("spinButton");
+    }
+  }
 
   // Update management page titles
   const addPrizeTitle = document.querySelector(".add-prize");
@@ -48,7 +156,10 @@ let lastWinner = null;
   // Update wheel
   updateWheel();
   updatePrizesList();
-     
+}
+
+
+
 // Initialize on page load
 document.addEventListener("DOMContentLoaded", function () {
   // โหลดข้อมูลจาก LocalStorage
@@ -420,6 +531,25 @@ async function showWinnerResult(winner) {
   const spinBtn = document.getElementById("spin-btn");
 
   winner.quantity--;
+  
+  // อัพเดทใน Google Sheets และบันทึกประวัติการหมุน
+  if (useGoogleSheets) {
+    try {
+      await GoogleSheetsAPI.updatePrize(winner.id, { quantity: winner.quantity });
+      await GoogleSheetsAPI.logWinner({
+        prizeId: winner.id,
+        prizeName: winner.name,
+        prizeColor: winner.color,
+        remainingQuantity: winner.quantity
+      });
+      console.log('Winner data updated in Google Sheets');
+      
+      // รีเฟรชข้อมูลทันทีหลังอัปเดต เพื่อให้จออื่นเห็นการเปลี่ยนแปลง
+      setTimeout(refreshFromGoogleSheets, 1000);
+    } catch (error) {
+      console.error('Error updating Google Sheets:', error);
+    }
+  }
   
   savePrizes();
   updateWheel();
