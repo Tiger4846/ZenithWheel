@@ -1,7 +1,7 @@
 // Google Sheets Configuration
 // คุณต้องสร้าง Google Apps Script Web App และใส่ URL ที่นี่
 const GOOGLE_SHEETS_CONFIG = {
-  webAppUrl: 'https://script.google.com/macros/s/AKfycbx9SjhyDG4QH5gu_H6CtLFB8yl0RL00IJEphZOQxZQtB18CqeocczC7eC-4c96Tl-dZ/exec',
+  webAppUrl: 'https://script.google.com/macros/s/AKfycbyqrjXKpscqe3ddb95j7o9oTYI5H6JshdM2KYXeG6B6NNzSRKb8xrQzo8_dtpostU5t3w/exec',
   sheetName: 'Prizes', // ชื่อ Sheet ที่จะเก็บข้อมูลรางวัล
   
   // ตั้งค่านี้เป็น false เมื่อใช้ Live Server (localhost)
