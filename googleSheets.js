@@ -6,7 +6,8 @@ const GOOGLE_SHEETS_CONFIG = {
   
   // ตั้งค่านี้เป็น false เมื่อใช้ Live Server (localhost)
   // ตั้งเป็น true เมื่อ Deploy แล้ว (GitHub Pages, Netlify, etc.)
-  enabled: true// เปลี่ยนเป็น true เมื่อ Deploy
+  // ⚠️ ปิดชั่วคราวเพราะ CORS error - ใช้ LocalStorage แทน
+  enabled: false
 };
 
 // Google Sheets API Functions
