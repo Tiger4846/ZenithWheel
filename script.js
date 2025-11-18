@@ -4,7 +4,6 @@ let isSpinning = false;
 let currentRotation = 0;
 let lastWinner = null;
 let currentLanguage = "en";
-let useGoogleSheets = false; // เปิดใช้งาน Google Sheets หรือไม่
 
 // Language translations
 const translations = {
@@ -159,66 +158,13 @@ function updatePageLanguage() {
   updatePrizesList();
 }
 
-// ฟังก์ชันสำหรับรีเฟรชข้อมูลจาก Google Sheets
-let refreshInterval = null;
 
-async function refreshFromGoogleSheets() {
-  if (!useGoogleSheets) return;
-  
-  try {
-    const sheetPrizes = await GoogleSheetsAPI.loadPrizesFromSheet();
-    if (sheetPrizes && sheetPrizes.length > 0) {
-      prizes = sheetPrizes;
-      updateWheel();
-      updatePrizesList();
-      console.log('Data refreshed from Google Sheets');
-    }
-  } catch (error) {
-    console.error('Error refreshing from Google Sheets:', error);
-  }
-}
-
-// เริ่ม auto-refresh ทุก 5 วินาที
-function startAutoRefresh() {
-  if (refreshInterval) clearInterval(refreshInterval);
-  refreshInterval = setInterval(refreshFromGoogleSheets, 5000);
-  console.log('Auto-refresh started (every 5 seconds)');
-}
-
-// หยุด auto-refresh
-function stopAutoRefresh() {
-  if (refreshInterval) {
-    clearInterval(refreshInterval);
-    refreshInterval = null;
-    console.log('Auto-refresh stopped');
-  }
-}
 
 // Initialize on page load
-document.addEventListener("DOMContentLoaded", async function () {
-  // ตรวจสอบว่า Google Sheets ถูกตั้งค่าแล้วหรือยัง
-  if (typeof GoogleSheetsAPI !== 'undefined' && isGoogleSheetsConfigured()) {
-    useGoogleSheets = true;
-    console.log('Google Sheets integration enabled');
-    
-    // ลองโหลดข้อมูลจาก Google Sheets
-    const sheetPrizes = await GoogleSheetsAPI.loadPrizesFromSheet();
-    if (sheetPrizes && sheetPrizes.length > 0) {
-      prizes = sheetPrizes;
-      console.log('Prizes loaded from Google Sheets:', prizes);
-      
-      // เริ่ม auto-refresh เมื่อโหลดสำเร็จ
-      startAutoRefresh();
-    } else {
-      // ถ้าโหลดไม่ได้ ให้ใช้ localStorage
-      loadPrizesFromLocalStorage();
-    }
-  } else {
-    // ใช้ localStorage เป็นหลัก
-    useGoogleSheets = false;
-    console.log('Using LocalStorage (Google Sheets not configured)');
-    loadPrizesFromLocalStorage();
-  }
+document.addEventListener("DOMContentLoaded", function () {
+  // โหลดข้อมูลจาก LocalStorage
+  console.log('Using LocalStorage');
+  loadPrizesFromLocalStorage();
   
   updateWheel();
   updatePrizesList();
@@ -305,11 +251,6 @@ async function addPrize() {
 
   prizes.push(newPrize);
   
-  // บันทึกลง Google Sheets ถ้าเปิดใช้งาน
-  if (useGoogleSheets) {
-    await GoogleSheetsAPI.createPrize(newPrize);
-  }
-  
   savePrizes();
   updateWheel();
   updatePrizesList();
@@ -339,11 +280,6 @@ async function deletePrize(prizeId) {
     const prizeIndex = prizes.findIndex((prize) => prize.id === prizeId);
     if (prizeIndex > -1) {
       const deletedPrize = prizes.splice(prizeIndex, 1)[0];
-      
-      // ลบจาก Google Sheets ถ้าเปิดใช้งาน
-      if (useGoogleSheets) {
-        await GoogleSheetsAPI.deletePrize(prizeId);
-      }
       
       savePrizes();
       updateWheel();
@@ -411,11 +347,6 @@ async function changeQuantity(prizeId, change) {
     const newQuantity = prize.quantity + change;
     if (newQuantity >= 0 && newQuantity <= 999) {
       prize.quantity = newQuantity;
-      
-      // อัพเดทใน Google Sheets ถ้าเปิดใช้งาน
-      if (useGoogleSheets) {
-        await GoogleSheetsAPI.updatePrize(prizeId, { quantity: newQuantity });
-      }
       
       savePrizes();
       updateWheel();
@@ -601,25 +532,6 @@ async function showWinnerResult(winner) {
 
   winner.quantity--;
   
-  // อัพเดทใน Google Sheets และบันทึกประวัติการหมุน
-  if (useGoogleSheets) {
-    try {
-      await GoogleSheetsAPI.updatePrize(winner.id, { quantity: winner.quantity });
-      await GoogleSheetsAPI.logWinner({
-        prizeId: winner.id,
-        prizeName: winner.name,
-        prizeColor: winner.color,
-        remainingQuantity: winner.quantity
-      });
-      console.log('Winner data updated in Google Sheets');
-      
-      // รีเฟรชข้อมูลทันทีหลังอัปเดต เพื่อให้จออื่นเห็นการเปลี่ยนแปลง
-      setTimeout(refreshFromGoogleSheets, 1000);
-    } catch (error) {
-      console.error('Error updating Google Sheets:', error);
-    }
-  }
-  
   savePrizes();
   updateWheel();
   updatePrizesList();
@@ -679,13 +591,6 @@ function closeModal() {
 // Storage functions
 function savePrizes() {
   localStorage.setItem("zenithwheel-prizes", JSON.stringify(prizes));
-  
-  // Sync กับ Google Sheets ถ้าเปิดใช้งาน
-  if (useGoogleSheets) {
-    GoogleSheetsAPI.syncAllPrizes(prizes).catch(err => {
-      console.error('Failed to sync with Google Sheets:', err);
-    });
-  }
 }
 
 function loadPrizesFromLocalStorage() {
