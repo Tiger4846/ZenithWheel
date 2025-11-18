@@ -48,10 +48,7 @@ let lastWinner = null;
   // Update wheel
   updateWheel();
   updatePrizesList();
-}
-
-
-
+     
 // Initialize on page load
 document.addEventListener("DOMContentLoaded", function () {
   // โหลดข้อมูลจาก LocalStorage
