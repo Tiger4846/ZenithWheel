@@ -159,6 +159,41 @@ function updatePageLanguage() {
   updatePrizesList();
 }
 
+// ฟังก์ชันสำหรับรีเฟรชข้อมูลจาก Google Sheets
+let refreshInterval = null;
+
+async function refreshFromGoogleSheets() {
+  if (!useGoogleSheets) return;
+  
+  try {
+    const sheetPrizes = await GoogleSheetsAPI.loadPrizesFromSheet();
+    if (sheetPrizes && sheetPrizes.length > 0) {
+      prizes = sheetPrizes;
+      updateWheel();
+      updatePrizesList();
+      console.log('Data refreshed from Google Sheets');
+    }
+  } catch (error) {
+    console.error('Error refreshing from Google Sheets:', error);
+  }
+}
+
+// เริ่ม auto-refresh ทุก 5 วินาที
+function startAutoRefresh() {
+  if (refreshInterval) clearInterval(refreshInterval);
+  refreshInterval = setInterval(refreshFromGoogleSheets, 5000);
+  console.log('Auto-refresh started (every 5 seconds)');
+}
+
+// หยุด auto-refresh
+function stopAutoRefresh() {
+  if (refreshInterval) {
+    clearInterval(refreshInterval);
+    refreshInterval = null;
+    console.log('Auto-refresh stopped');
+  }
+}
+
 // Initialize on page load
 document.addEventListener("DOMContentLoaded", async function () {
   // ตรวจสอบว่า Google Sheets ถูกตั้งค่าแล้วหรือยัง
@@ -171,6 +206,9 @@ document.addEventListener("DOMContentLoaded", async function () {
     if (sheetPrizes && sheetPrizes.length > 0) {
       prizes = sheetPrizes;
       console.log('Prizes loaded from Google Sheets:', prizes);
+      
+      // เริ่ม auto-refresh เมื่อโหลดสำเร็จ
+      startAutoRefresh();
     } else {
       // ถ้าโหลดไม่ได้ ให้ใช้ localStorage
       loadPrizesFromLocalStorage();
@@ -565,8 +603,21 @@ async function showWinnerResult(winner) {
   
   // อัพเดทใน Google Sheets และบันทึกประวัติการหมุน
   if (useGoogleSheets) {
-    await GoogleSheetsAPI.updatePrize(winner.id, { quantity: winner.quantity });
-    await GoogleSheetsAPI.logWinner(winner);
+    try {
+      await GoogleSheetsAPI.updatePrize(winner.id, { quantity: winner.quantity });
+      await GoogleSheetsAPI.logWinner({
+        prizeId: winner.id,
+        prizeName: winner.name,
+        prizeColor: winner.color,
+        remainingQuantity: winner.quantity
+      });
+      console.log('Winner data updated in Google Sheets');
+      
+      // รีเฟรชข้อมูลทันทีหลังอัปเดต เพื่อให้จออื่นเห็นการเปลี่ยนแปลง
+      setTimeout(refreshFromGoogleSheets, 1000);
+    } catch (error) {
+      console.error('Error updating Google Sheets:', error);
+    }
   }
   
   savePrizes();
