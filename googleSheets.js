@@ -1,13 +1,12 @@
 // Google Sheets Configuration
 // คุณต้องสร้าง Google Apps Script Web App และใส่ URL ที่นี่
 const GOOGLE_SHEETS_CONFIG = {
-  webAppUrl: 'https://script.google.com/macros/s/AKfycbz24cJUfUGjv8Ftu8JvupPhKUToafZyGMU-Hews_M3ogkR1oXWKc7_6FSWf4Nlds8HW/exec',
+  webAppUrl: 'https://script.google.com/macros/s/AKfycbynPfXL6ZizD0oDxiaJ50waho4N_rq_DNQ7Mxv7uhAEns4Yw1E013fFNbPuZAncukPV/exec',
   sheetName: 'Prizes', // ชื่อ Sheet ที่จะเก็บข้อมูลรางวัล
   
   // ตั้งค่านี้เป็น false เมื่อใช้ Live Server (localhost)
   // ตั้งเป็น true เมื่อ Deploy แล้ว (GitHub Pages, Netlify, etc.)
-  // ⚠️ ปิดชั่วคราวเพราะ CORS error - ใช้ LocalStorage แทน
-  enabled: false
+  enabled: true
 };
 
 // Google Sheets API Functions
