@@ -19,33 +19,6 @@ body {
   position: relative;
 }
 
-.lang-toggle {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  background: #1A6FB1;
-  color: white;
-  border: none;
-  padding: 10px 18px;
-  border-radius: 20px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: bold;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  z-index: 5000;
-  font-family: "Sarabun", sans-serif;
-}
-
-.lang-toggle:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-}
-
-.lang-toggle:active {
-  transform: translateY(0);
-}
-
 .back-btn {
   background: linear-gradient(45deg, #2ed573, #1e90ff);
   color: white;
