@@ -6,7 +6,7 @@ const GOOGLE_SHEETS_CONFIG = {
   
   // ตั้งค่านี้เป็น false เมื่อใช้ Live Server (localhost)
   // ตั้งเป็น true เมื่อ Deploy แล้ว (GitHub Pages, Netlify, etc.)
-  enabled: false // เปลี่ยนเป็น true เมื่อ Deploy
+  enabled: true// เปลี่ยนเป็น true เมื่อ Deploy
 };
 
 // Google Sheets API Functions
