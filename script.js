@@ -3,160 +3,6 @@ let prizes = [];
 let isSpinning = false;
 let currentRotation = 0;
 let lastWinner = null;
-let currentLanguage = "en";
-
-// Language translations
-const translations = {
-  th: {
-    wheelTitle: "🎡 วงล้อสุ่มรางวัล",
-    manageTitle: "⚙️ จัดการรางวัล",
-    spinButton: "🎯 หมุนวงล้อ",
-    spinButtonSpinning: "🎡 กำลังหมุน...",
-    spinButtonSelecting: "🎯 เลือกรางวัลเดียวที่เหลือ...",
-    spinButtonNoMore: "❌ รางวัลหมดแล้ว",
-    spinButtonFinal: "🎯 เลือกรางวัลสุดท้าย",
-    clickToStart: 'คลิกปุ่ม "หมุนวงล้อ" เพื่อเริ่มเล่น!',
-    addPrizeTitle: "เพิ่มรางวัลใหม่",
-    prizeName: "ชื่อรางวัล:",
-    prizeNamePlaceholder: "กรุณาใส่ชื่อรางวัล",
-    quantity: "จำนวน:",
-    quantityPlaceholder: "จำนวน",
-    addButton: "➕ เพิ่มรางวัล",
-    prizeListTitle: "📋 รายการรางวัลทั้งหมด",
-    noPrives: "ยังไม่มีรางวัล",
-    addPrizeToStart: "เพิ่มรางวัลใหม่เพื่อเริ่มใช้งานวงล้อ",
-    congrats: "🎉 ยินดีด้วย! 🎉",
-    congratsText: "รางวัลของคุณ",
-    congratsSubtext: "คุณได้รับรางวัลแล้ว!",
-    closeButton: "✨ ปิด",
-    deleteButton: "🗑️ ลบ",
-    noRewards: "ไม่มีรางวัล",
-    noRewardsAvailable: "รางวัลหมดแล้ว",
-    addQuantity: "เพิ่มจำนวนรางวัล",
-    spinAgain: "🎯 หมุนวงล้อเพื่อรับรางวัลใหม่! 🎉",
-    selectReward: "🎯 ได้รับ",
-    remaining: "คงเหลือ:",
-    outOf: "จาก",
-    outOfStock: "(หมด)",
-    backButton: "← กลับ",
-    noPrizesWheel: "ไม่มีรางวัล",
-    allPrizesGone: "รางวัลหมดแล้ว",
-    onePrizeLeft: "🎯 เหลือรางวัลเดียว! การหมุนจะได้รางวัลนี้อัตโนมัติ",
-    allPrizesGoneWarning: "⚠️ รางวัลทั้งหมดหมดแล้ว! กรุณาเพิ่มจำนวนรางวัล",
-  },
-  en: {
-    wheelTitle: "🎡 Spin Wheel",
-    manageTitle: "⚙️ Manage Prizes",
-    spinButton: "🎯 Spin Wheel",
-    spinButtonSpinning: "🎡 Spinning...",
-    spinButtonSelecting: "🎯 Selecting Last Prize...",
-    spinButtonNoMore: "❌ No Prizes Left",
-    spinButtonFinal: "🎯 Select Last Prize",
-    clickToStart: 'Click "Spin Wheel" button to start playing!',
-    addPrizeTitle: "Add New Prize",
-    prizeName: "Prize Name:",
-    prizeNamePlaceholder: "Enter prize name",
-    quantity: "Quantity:",
-    quantityPlaceholder: "Quantity",
-    addButton: "➕ Add Prize",
-    prizeListTitle: "📋 All Prizes",
-    noPrives: "No Prizes",
-    addPrizeToStart: "Add a new prize to start using the wheel",
-    congrats: "🎉 Congratulations! 🎉",
-    congratsText: "Your Prize",
-    congratsSubtext: "You won!",
-    closeButton: "✨ Close",
-    deleteButton: "🗑️ Delete",
-    noRewards: "No Rewards",
-    noRewardsAvailable: "All prizes are gone",
-    addQuantity: "Add prize quantity",
-    spinAgain: "🎯 Spin the wheel to get a new prize! 🎉",
-    selectReward: "🎯 You Got",
-    remaining: "Remaining:",
-    outOf: "of",
-    outOfStock: "(Out)",
-    backButton: "← Back",
-    noPrizesWheel: "No Prizes",
-    allPrizesGone: "All prizes are gone",
-    onePrizeLeft: "🎯 Only one prize left! Spin will select it automatically",
-    allPrizesGoneWarning: "⚠️ All prizes are gone! Please add more quantities",
-  },
-};
-
-function t(key) {
-  return translations[currentLanguage][key] || key;
-}
-
-function toggleLanguage() {
-  currentLanguage = currentLanguage === "th" ? "en" : "th";
-  const btn = document.getElementById("lang-toggle");
-  btn.textContent = currentLanguage === "th" ? "TH" : "EN";
-  updatePageLanguage();
-}
-
-function updatePageLanguage() {
-  // Update navigation buttons
-  const navBtns = document.querySelectorAll(".nav-btn");
-  if (navBtns[0]) navBtns[0].textContent = t("manageTitle");
-
-  // Update spin button
-  const spinBtn = document.getElementById("spin-btn");
-  if (spinBtn) {
-    if (spinBtn.disabled) {
-      if (spinBtn.textContent.includes("ปิด") || spinBtn.textContent.includes("No Prizes")) {
-        spinBtn.textContent = t("spinButtonNoMore");
-      }
-    } else if (spinBtn.textContent.includes("เลือก") || spinBtn.textContent.includes("Select")) {
-      spinBtn.textContent = t("spinButtonFinal");
-    } else {
-      spinBtn.textContent = t("spinButton");
-    }
-  }
-
-  // Update management page titles
-  const addPrizeTitle = document.querySelector(".add-prize");
-  if (addPrizeTitle) addPrizeTitle.textContent = t("addPrizeTitle");
-
-  const prizeLabels = document.querySelectorAll(".form-group label");
-  if (prizeLabels[0]) prizeLabels[0].textContent = t("prizeName");
-  if (prizeLabels[1]) prizeLabels[1].textContent = t("quantity");
-
-  const addBtn = document.querySelector(".add-btn");
-  if (addBtn) addBtn.textContent = t("addButton");
-
-  const prizeHeader = document.querySelector(".prizes-header");
-  if (prizeHeader) prizeHeader.textContent = t("prizeListTitle");
-
-  // Update empty state
-  const emptyState = document.querySelector(".empty-state");
-  if (emptyState) {
-    const h3 = emptyState.querySelector("h3");
-    const p = emptyState.querySelector("p");
-    if (h3) h3.textContent = t("noPrives");
-    if (p) p.textContent = t("addPrizeToStart");
-  }
-
-  // Update modal header
-  const modalHeader = document.querySelector(".modal-header h2");
-  if (modalHeader) modalHeader.textContent = t("congrats");
-
-  const closeBtn = document.querySelector(".modal-close-btn");
-  if (closeBtn) closeBtn.textContent = t("closeButton");
-
-  // Update back button
-  const backBtn = document.getElementById("back-btn");
-  if (backBtn) backBtn.textContent = t("backButton");
-
-  // Update input placeholders
-  const prizeNameInput = document.getElementById("prize-name");
-  const quantityInput = document.getElementById("prize-quantity");
-  if (prizeNameInput) prizeNameInput.placeholder = t("prizeNamePlaceholder");
-  if (quantityInput) quantityInput.placeholder = t("quantityPlaceholder");
-
-  // Update wheel
-  updateWheel();
-  updatePrizesList();
-}
 
 
 
@@ -199,11 +45,7 @@ async function addPrize() {
   const quantity = parseInt(quantityInput.value) || 1;
 
   if (name === "") {
-    alert(
-      currentLanguage === "th"
-        ? "กรุณาใส่ชื่อรางวัล!"
-        : "Please enter a prize name!"
-    );
+    alert("กรุณาใส่ชื่อรางวัล!");
     nameInput.focus();
     return;
   }
@@ -214,30 +56,18 @@ async function addPrize() {
   }
 
   if (quantity < 1 || quantity > 999) {
-    alert(
-      currentLanguage === "th"
-        ? "จำนวนรางวัลต้องอยู่ระหว่าง 1-999!"
-        : "Quantity must be between 1-999!"
-    );
+    alert("จำนวนรางวัลต้องอยู่ระหว่าง 1-999!");
     quantityInput.focus();
     return;
   }
 
   if (prizes.length >= 12) {
-    alert(
-      currentLanguage === "th"
-        ? "สามารถเพิ่มรางวัลได้สูงสุด 12 รายการ!"
-        : "You can add a maximum of 12 prizes!"
-    );
+    alert("สามารถเพิ่มรางวัลได้สูงสุด 12 รายการ!");
     return;
   }
 
   if (prizes.some((prize) => prize.name.toLowerCase() === name.toLowerCase())) {
-    alert(
-      currentLanguage === "th"
-        ? "มีรางวัลชื่อนี้อยู่แล้ว!"
-        : "A prize with this name already exists!"
-    );
+    alert("มีรางวัลชื่อนี้อยู่แล้ว!");
     return;
   }
 
@@ -263,20 +93,11 @@ async function addPrize() {
     randomColor();
   }, 100);
 
-  const successMsg =
-    currentLanguage === "th"
-      ? `เพิ่มรางวัล "${name}" จำนวน ${quantity} รายการเรียบร้อยแล้ว!`
-      : `Added prize "${name}" with quantity ${quantity}!`;
-  showNotification(successMsg, "success");
+  showNotification(`เพิ่มรางวัล "${name}" จำนวน ${quantity} รายการเรียบร้อยแล้ว!`, "success");
 }
 
 async function deletePrize(prizeId) {
-  const confirmMsg =
-    currentLanguage === "th"
-      ? "คุณแน่ใจหรือไม่ที่จะลบรางวัลนี้?"
-      : "Are you sure you want to delete this prize?";
-      
-  if (confirm(confirmMsg)) {
+  if (confirm("คุณแน่ใจหรือไม่ที่จะลบรางวัลนี้?")) {
     const prizeIndex = prizes.findIndex((prize) => prize.id === prizeId);
     if (prizeIndex > -1) {
       const deletedPrize = prizes.splice(prizeIndex, 1)[0];
@@ -285,11 +106,7 @@ async function deletePrize(prizeId) {
       updateWheel();
       updatePrizesList();
       
-      const deleteMsg =
-        currentLanguage === "th"
-          ? `ลบรางวัล "${deletedPrize.name}" เรียบร้อยแล้ว!`
-          : `Deleted prize "${deletedPrize.name}"!`;
-      showNotification(deleteMsg, "error");
+      showNotification(`ลบรางวัล "${deletedPrize.name}" เรียบร้อยแล้ว!`, "error");
     }
   }
 }
@@ -300,8 +117,8 @@ function updatePrizesList() {
   if (prizes.length === 0) {
     container.innerHTML = `
       <div class="empty-state">
-        <h3>${t("noPrives")}</h3>
-        <p>${t("addPrizeToStart")}</p>
+        <h3>ยังไม่มีรางวัล</h3>
+        <p>เพิ่มรางวัลใหม่เพื่อเริ่มใช้งานวงล้อ</p>
       </div>
     `;
     return;
@@ -317,8 +134,8 @@ function updatePrizesList() {
             <div>
               <div class="prize-name">${prize.name}</div>
               <div class="prize-quantity ${prize.quantity === 0 ? "out-of-stock" : ""}">
-                ${t("remaining")} ${prize.quantity} ${t("outOf")} ${prize.originalQuantity}
-                ${prize.quantity === 0 ? t("outOfStock") : ""}
+                คงเหลือ: ${prize.quantity} จาก ${prize.originalQuantity}
+                ${prize.quantity === 0 ? "(หมด)" : ""}
               </div>
             </div>
           </div>
@@ -333,7 +150,7 @@ function updatePrizesList() {
         prize.quantity >= 999 ? "disabled" : ""
       }>+</button>
           </div>
-          <button class="delete-btn" onclick="deletePrize(${prize.id})">${t("deleteButton")}</button>
+          <button class="delete-btn" onclick="deletePrize(${prize.id})">🗑️ ลบ</button>
         </div>
       </div>
     `
@@ -352,14 +169,8 @@ async function changeQuantity(prizeId, change) {
       updateWheel();
       updatePrizesList();
 
-      const action =
-        change > 0
-          ? currentLanguage === "th" ? "เพิ่ม" : "Increased"
-          : currentLanguage === "th" ? "ลด" : "Decreased";
-      const msg =
-        currentLanguage === "th"
-          ? `${action}จำนวนรางวัล "${prize.name}" เรียบร้อยแล้ว (คงเหลือ: ${prize.quantity})`
-          : `${action} quantity of "${prize.name}" (Remaining: ${prize.quantity})`;
+      const action = change > 0 ? "เพิ่ม" : "ลด";
+      const msg = `${action}จำนวนรางวัล "${prize.name}" เรียบร้อยแล้ว (คงเหลือ: ${prize.quantity})`;
       showNotification(msg, "success");
     }
   }
@@ -377,18 +188,18 @@ function updateWheel() {
   const availablePrizes = prizes.filter((prize) => prize.quantity > 0);
 
   if (prizes.length === 0) {
-    wheel.innerHTML = `<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #666; font-size: 18px;">${t("noPrizesWheel")}</div>`;
+    wheel.innerHTML = `<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #666; font-size: 24px;">ไม่มีรางวัล</div>`;
     return;
   }
 
   if (availablePrizes.length === 0) {
-    wheel.innerHTML = `<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #ff6b6b; font-size: 18px;">${t("allPrizesGone")}</div>`;
-    noticeDiv.innerHTML = `<div class="no-prizes-notice">${t("allPrizesGoneWarning")}</div>`;
+    wheel.innerHTML = `<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #ff6b6b; font-size: 24px;">รางวัลหมดแล้ว</div>`;
+    noticeDiv.innerHTML = `<div class="no-prizes-notice">⚠️ รางวัลทั้งหมดหมดแล้ว! กรุณาเพิ่มจำนวนรางวัล</div>`;
     return;
   }
 
   if (availablePrizes.length === 1) {
-    noticeDiv.innerHTML = `<div class="auto-select-notice">${t("onePrizeLeft")}</div>`;
+    noticeDiv.innerHTML = `<div class="auto-select-notice">🎯 เหลือรางวัลเดียว! การหมุนจะได้รางวัลนี้อัตโนมัติ</div>`;
   }
 
   const svgHTML = createWheelSVG(availablePrizes);
@@ -409,7 +220,7 @@ function createWheelSVG(availablePrizes) {
         fill="${prize.color}" stroke="#fff" stroke-width="2"/>
       <text x="${centerX}" y="${centerY}" 
         fill="white" 
-        font-family="Arial, sans-serif" 
+        font-family="'Kanit', sans-serif" 
         font-size="18" 
         font-weight="bold" 
         text-anchor="middle" 
@@ -449,7 +260,7 @@ function createWheelSVG(availablePrizes) {
         <path d="${pathData}" fill="${prize.color}" stroke="#fff" stroke-width="2"/>
         <text x="${textX}" y="${textY}" 
           fill="white" 
-          font-family="Arial, sans-serif" 
+          font-family="'Kanit', sans-serif" 
           font-size="14" 
           font-weight="bold" 
           text-anchor="middle" 
@@ -470,20 +281,12 @@ async function spinWheel() {
   const availablePrizes = prizes.filter((prize) => prize.quantity > 0);
 
   if (prizes.length === 0) {
-    const msg =
-      currentLanguage === "th"
-        ? "กรุณาเพิ่มรางวัลก่อนหมุนวงล้อ!"
-        : "Please add prizes before spinning!";
-    alert(msg);
+    alert("กรุณาเพิ่มรางวัลก่อนหมุนวงล้อ!");
     return;
   }
 
   if (availablePrizes.length === 0) {
-    const msg =
-      currentLanguage === "th"
-        ? "รางวัลหมดแล้ว! กรุณาเพิ่มจำนวนรางวัลก่อนหมุน"
-        : "All prizes are gone! Please add more quantities!";
-    alert(msg);
+    alert("รางวัลหมดแล้ว! กรุณาเพิ่มจำนวนรางวัลก่อนหมุน");
     return;
   }
 
@@ -499,13 +302,13 @@ async function spinWheel() {
 
   if (availablePrizes.length === 1) {
     winner = availablePrizes[0];
-    spinBtn.textContent = t("spinButtonSelecting");
+    spinBtn.textContent = "🎯 เลือกรางวัลเดียวที่เหลือ...";
 
     setTimeout(() => {
       showWinnerResult(winner);
     }, 1500);
   } else {
-    spinBtn.textContent = t("spinButtonSpinning");
+    spinBtn.textContent = "🎡 กำลังหมุน...";
 
     const minRotation = 1800;
     const randomRotation = Math.random() * 360;
@@ -532,25 +335,6 @@ async function showWinnerResult(winner) {
 
   winner.quantity--;
   
-  // อัพเดทใน Google Sheets และบันทึกประวัติการหมุน
-  if (useGoogleSheets) {
-    try {
-      await GoogleSheetsAPI.updatePrize(winner.id, { quantity: winner.quantity });
-      await GoogleSheetsAPI.logWinner({
-        prizeId: winner.id,
-        prizeName: winner.name,
-        prizeColor: winner.color,
-        remainingQuantity: winner.quantity
-      });
-      console.log('Winner data updated in Google Sheets');
-      
-      // รีเฟรชข้อมูลทันทีหลังอัปเดต เพื่อให้จออื่นเห็นการเปลี่ยนแปลง
-      setTimeout(refreshFromGoogleSheets, 1000);
-    } catch (error) {
-      console.error('Error updating Google Sheets:', error);
-    }
-  }
-  
   savePrizes();
   updateWheel();
   updatePrizesList();
@@ -563,13 +347,13 @@ async function showWinnerResult(winner) {
   const availablePrizes = prizes.filter((prize) => prize.quantity > 0);
   if (availablePrizes.length === 0) {
     spinBtn.disabled = true;
-    spinBtn.textContent = t("spinButtonNoMore");
+    spinBtn.textContent = "❌ รางวัลหมดแล้ว";
   } else if (availablePrizes.length === 1) {
     spinBtn.disabled = false;
-    spinBtn.textContent = t("spinButtonFinal");
+    spinBtn.textContent = "🎯 เลือกรางวัลสุดท้าย";
   } else {
     spinBtn.disabled = false;
-    spinBtn.textContent = t("spinButton");
+    spinBtn.textContent = "🎯 หมุนวงล้อ";
   }
 
   createConfetti();
@@ -588,10 +372,7 @@ function showPrizeModal(winner) {
 
   modalIcon.style.backgroundColor = winner.color;
   modalText.textContent = winner.name;
-  modalSubtext.textContent = 
-    currentLanguage === "th"
-      ? `คงเหลือ: ${winner.quantity} รางวัล`
-      : `Remaining: ${winner.quantity} prizes`;
+  modalSubtext.textContent = `คงเหลือ: ${winner.quantity} รางวัล`;
 
   modal.classList.add("show");
 

@@ -6,9 +6,8 @@
 }
 
 body {
-  font-family: "Sarabun", sans-serif;
-  background: url('BGwave.png') no-repeat center top fixed;
-  background-size: cover;
+  font-family: 'Kanit', sans-serif;
+  background: url('BG.png') center top / cover no-repeat fixed;
   min-height: 100vh;
   padding: 20px;
 }
@@ -17,6 +16,10 @@ body {
   max-width: 1200px;
   margin: 0 auto;
   position: relative;
+}
+
+.controls {
+  display: flex;
 }
 
 .back-btn {
@@ -86,13 +89,15 @@ body {
   background: #E38533;
   color: white;
   border: none;
-  padding: 12px 30px;
-  border-radius: 25px;
-  cursor: pointer;
-  font-size: 16px;
+  padding: 15px;
+  border-radius: 30px;
+  font-size: 18px;
   font-weight: bold;
+  cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  margin-top: 20px;
+  margin-left: 5px;
 }
 
 .nav-btn:hover {
@@ -120,7 +125,7 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 30px;
-  margin-bottom: 10px;
+  margin-bottom: 30px;
 }
 
 .wheel-section {
@@ -131,13 +136,14 @@ body {
 }
 
 #wheel {
-  width: 525px;
-  height: 525px;
+  width: 500px;
+  height: 500px;
   border-radius: 50%;
-  border: 8px solid #1A6FB1;
+  border: 10px solid white;
   position: relative;
   transition: transform 4s cubic-bezier(0.23, 1, 0.32, 1);
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 30px 5px rgba(255, 255, 255, 0.5), 0 0 60px 10px rgba(255, 255, 255, 0.3);
+  margin-top: 100px;
 }
 
 .wheel-segment {
@@ -173,6 +179,7 @@ body {
   border-top: 30px solid #ff6b6b;
   z-index: 10;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  margin-top: 100px;
 }
 
 .spin-btn {

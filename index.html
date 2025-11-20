@@ -15,33 +15,22 @@
   <body>
     <!-- Main Container -->
     <div class="container">
-      <!-- Language Toggle Button -->
-      <button id="lang-toggle" class="lang-toggle" onclick="toggleLanguage()">
-        TH
-      </button>
-
       <!-- Pages -->
       <main>
         <!-- Wheel Page -->
         <section id="wheel-page" class="page active">
           <div class="wheel-container">
             <div class="wheel-section">
-              <div id="wheel-notice"></div>
               <div class="pointer"></div>
               <div id="wheel"></div>
-              <button id="spin-btn" class="spin-btn" onclick="spinWheel()">
-                หมุนวงล้อ
-              </button>
+              <div id="wheel-notice"></div>
+              <div id ="controls" class="controls">
+                <button id="spin-btn" class="spin-btn" onclick="spinWheel()">
+                  หมุนวงล้อ
+                </button>
+                <button class="nav-btn" onclick="showPage('manage')">⚙️</button>
+              </div>
             </div>
-            <!-- Navigation Buttons -->
-            <nav class="nav-buttons">
-              <!-- <button class="nav-btn active" onclick="showPage('wheel')">
-                🎡 วงล้อสุ่มรางวัล
-              </button> -->
-              <button class="nav-btn" onclick="showPage('manage')">
-                จัดการรางวัล
-              </button>
-            </nav>
           </div>
         </section>
 
@@ -91,8 +80,14 @@
             </div>
 
             <!-- Back Button -->
-            <div style="text-align: center; margin-top: 20px;">
-              <button class="back-btn" id="back-btn" onclick="showPage('wheel')">← กลับ</button>
+            <div style="text-align: center; margin-top: 20px">
+              <button
+                class="back-btn"
+                id="back-btn"
+                onclick="showPage('wheel')"
+              >
+                ← กลับ
+              </button>
             </div>
           </div>
         </section>
@@ -122,4 +117,3 @@
     <script src="script.js"></script>
   </body>
 </html>
-    
