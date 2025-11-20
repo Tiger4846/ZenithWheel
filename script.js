@@ -3,6 +3,7 @@ let prizes = [];
 let isSpinning = false;
 let currentRotation = 0;
 let lastWinner = null;
+let colorIndex = 0;
 
 
 
@@ -14,7 +15,7 @@ document.addEventListener("DOMContentLoaded", function () {
   
   updateWheel();
   updatePrizesList();
-  randomColor();
+  sequentialColor(colorIndex);
 });
 
 // Page navigation
@@ -35,6 +36,7 @@ function showPage(pageName) {
 }
 
 // Prize management functions
+/* Updated addPrize function to allow manual color selection or fallback to sequential color */
 async function addPrize() {
   const nameInput = document.getElementById("prize-name");
   const colorInput = document.getElementById("prize-color");
@@ -50,8 +52,8 @@ async function addPrize() {
     return;
   }
 
-  if (color === "") {
-    color = generateRandomColor();
+  if (color === "" || color === "#000000") {
+    color = generateSequentialColor(colorIndex);
     colorInput.value = color;
   }
 
@@ -88,9 +90,15 @@ async function addPrize() {
   nameInput.value = "";
   colorInput.value = "";
   quantityInput.value = "1";
+  colorIndex++; // Increment color index for the next prize
+  setTimeout(() => {
+    sequentialColor(colorIndex);
+  }, 100);
+
+  colorIndex++; // Increment color index for the next prize
 
   setTimeout(() => {
-    randomColor();
+    sequentialColor(colorIndex);
   }, 100);
 
   showNotification(`เพิ่มรางวัล "${name}" จำนวน ${quantity} รายการเรียบร้อยแล้ว!`, "success");
@@ -523,24 +531,19 @@ function createSparkleExplosion() {
 }
 
 // Color generation functions
-function generateRandomColor() {
+/* Updated the color generation logic to use sequential selection */
+function generateSequentialColor(index) {
   const colors = [
-    "#ff6b6b", "#4ecdc4", "#45b7d1", "#96ceb4", "#ffeaa7", "#dda0dd",
-    "#ff7675", "#74b9ff", "#a29bfe", "#6c5ce7", "#fd79a8", "#fdcb6e",
-    "#e17055", "#81ecec", "#55a3ff", "#00b894", "#e84393", "#f39c12",
-    "#8e44ad", "#3498db", "#e74c3c", "#2ecc71", "#f1c40f", "#9b59b6",
-    "#1abc9c", "#34495e", "#16a085", "#27ae60", "#2980b9", "#8e44ad",
+    "#ff6b6b", "#4ecdc4", "#45b7d1", "#96ceb4", "#ffeaa7", 
+    "#74b9ff", "#a29bfe", "#fd79a8", "#fdcb6e",
+    "#e17055", "#81ecec", "#55a3ff", "#00b894", "#f39c12",
+    "#3498db", "#e74c3c", "#2ecc71", "#f1c40f", "#9b59b6",
+    "#1abc9c", "#16a085", "#27ae60", "#2980b9", "#dda0dd",
   ];
-  return colors[Math.floor(Math.random() * colors.length)];
+  return colors[index % colors.length];
 }
 
-function randomColor() {
-  const colorInput = document.getElementById("prize-color");
-  if (colorInput) {
-    const newColor = generateRandomColor();
-    colorInput.value = newColor;
-  }
-}
+
 
 // Handle Enter key press in prize name input
 document.addEventListener("DOMContentLoaded", function() {
