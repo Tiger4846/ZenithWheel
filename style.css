@@ -7,7 +7,7 @@
 
 body {
   font-family: 'Kanit', sans-serif;
-  background: url('BG.png') center top / cover no-repeat fixed;
+  background: url('bg-completed.png') center top / cover no-repeat fixed;
   min-height: 100vh;
   padding: 20px;
 }
