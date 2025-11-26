@@ -506,6 +506,7 @@ function showPrizeModal(winner) {
 function closeModal() {
   const modal = document.getElementById("prize-modal");
   modal.classList.remove("show");
+  location.reload(); // Refresh page when modal closes
 }
 
 // Notification system
