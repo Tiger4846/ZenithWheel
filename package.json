@@ -1,0 +1,25 @@
+{
+  "name": "zenithwheel",
+  "version": "1.0.0",
+  "description": "For random wheel to win prizes",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tiger4846/ZenithWheel.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Tiger4846/ZenithWheel/issues"
+  },
+  "homepage": "https://github.com/Tiger4846/ZenithWheel#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0"
+  }
+}
