@@ -49,8 +49,8 @@ async function loadPrizes() {
         prize.originalQuantity !== undefined
           ? prize.originalQuantity
           : prize.quantity !== undefined
-          ? prize.quantity
-          : 3,
+            ? prize.quantity
+            : 3,
     }));
   } else {
     // ถ้า server ยังไม่มีข้อมูล หรือไฟล์ว่าง ใช้ default set แล้วเซฟกลับไปที่ server
@@ -108,7 +108,7 @@ async function savePrizes() {
 
 // Initialize on page load
 document.addEventListener("DOMContentLoaded", async function () {
-  console.log("Using backend API / prizes.json");
+  // console.log("Using backend API / prizes.json");
   await loadPrizes();
 
   updateWheel();
@@ -210,7 +210,7 @@ async function addPrize() {
 
 async function deletePrize(prizeId) {
   if (confirm("คุณแน่ใจหรือไม่ที่จะลบรางวัลนี้?")) {
-    const prizeIndex = prizes.findIndex((prize) => prize.id === prizeId);
+    const prizeIndex = prizes.findIndex((prize) => String(prize.id) === String(prizeId));
     if (prizeIndex > -1) {
       const deletedPrize = prizes.splice(prizeIndex, 1)[0];
 
@@ -245,14 +245,12 @@ function updatePrizesList() {
       <div class="prize-item ${prize.quantity === 0 ? "out-of-stock" : ""}">
         <div class="prize-info">
           <div style="display: flex; align-items: center;">
-            <div class="prize-color" style="background-color: ${
-              prize.color
-            }"></div>
+            <div class="prize-color" style="background-color: ${prize.color
+        }"></div>
             <div>
               <div class="prize-name">${prize.name}</div>
-              <div class="prize-quantity ${
-                prize.quantity === 0 ? "out-of-stock" : ""
-              }">
+              <div class="prize-quantity ${prize.quantity === 0 ? "out-of-stock" : ""
+        }">
                 คงเหลือ: ${prize.quantity} จาก ${prize.originalQuantity}
                 ${prize.quantity === 0 ? "(หมด)" : ""}
               </div>
@@ -261,17 +259,14 @@ function updatePrizesList() {
         </div>
         <div class="prize-actions">
           <div class="quantity-controls">
-            <button class="quantity-btn" onclick="changeQuantity(${
-              prize.id
-            }, -1)" ${prize.quantity === 0 ? "disabled" : ""}>−</button>
+            <button class="quantity-btn" onclick="changeQuantity(${prize.id
+        }, -1)" ${prize.quantity === 0 ? "disabled" : ""}>−</button>
             <div class="quantity-display">${prize.quantity}</div>
-            <button class="quantity-btn" onclick="changeQuantity(${
-              prize.id
-            }, 1)" ${prize.quantity >= 999 ? "disabled" : ""}>+</button>
+            <button class="quantity-btn" onclick="changeQuantity(${prize.id
+        }, 1)" ${prize.quantity >= 999 ? "disabled" : ""}>+</button>
           </div>
-          <button class="delete-btn" onclick="deletePrize(${
-            prize.id
-          })">🗑️ ลบ</button>
+          <button class="delete-btn" onclick="deletePrize(${prize.id
+        })">🗑️ ลบ</button>
         </div>
       </div>
     `
@@ -280,7 +275,7 @@ function updatePrizesList() {
 }
 
 async function changeQuantity(prizeId, change) {
-  const prize = prizes.find((p) => p.id === prizeId);
+  const prize = prizes.find((p) => String(p.id) === String(prizeId));
   if (prize) {
     const newQuantity = prize.quantity + change;
     if (newQuantity >= 0 && newQuantity <= 999) {
@@ -520,10 +515,9 @@ function showNotification(message, type = "success") {
     position: fixed;
     top: 20px;
     right: 20px;
-    background: ${
-      type === "success"
-        ? "linear-gradient(45deg, #2ed573, #1e90ff)"
-        : "linear-gradient(45deg, #ff6b6b, #ee5a24)"
+    background: ${type === "success"
+      ? "linear-gradient(45deg, #2ed573, #1e90ff)"
+      : "linear-gradient(45deg, #ff6b6b, #ee5a24)"
     };
     color: white;
     padding: 15px 25px;

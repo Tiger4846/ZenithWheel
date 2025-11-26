@@ -1,14 +1,12 @@
 // server.js
 const express = require("express");
-const fs = require("fs");
 const path = require("path");
 const cors = require("cors");
+const prizesModel = require("./prizesModel");
+const fs = require("fs"); // Used only for initial seeding if needed
 
 const app = express();
-const PORT = 3000;
-
-// ไฟล์เก็บข้อมูล
-const DATA_FILE = path.join(__dirname, "prizes.json");
+const PORT = process.env.PORT || 3000;
 
 // --- Middleware ---
 app.use(cors());
@@ -17,59 +15,69 @@ app.use(express.json());
 // เสิร์ฟไฟล์หน้าเว็บจากโฟลเดอร์ public
 app.use(express.static(path.join(__dirname, "public")));
 
-// --- ฟังก์ชันช่วยอ่าน/เขียนไฟล์ ---
-function readPrizesFromFile() {
+// --- Initialization ---
+// Initialize DB
+(async () => {
   try {
-    if (!fs.existsSync(DATA_FILE)) {
-      return [];
-    }
-    const raw = fs.readFileSync(DATA_FILE, "utf8");
-    if (!raw) return [];
-    return JSON.parse(raw);
+    await prizesModel.initTable();
+    console.log("Database initialized.");
   } catch (err) {
-    console.error("Read file error:", err);
-    return [];
+    console.error("Initialization error:", err);
   }
-}
-
-function writePrizesToFile(prizes) {
-  fs.writeFileSync(DATA_FILE, JSON.stringify(prizes, null, 2), "utf8");
-}
+})();
 
 // --- API: GET /api/prizes (โหลดรางวัลทั้งหมด) ---
-app.get("/api/prizes", (req, res) => {
-  const prizes = readPrizesFromFile();
-  res.json({ prizes });
+app.get("/api/prizes", async (req, res) => {
+  try {
+    const prizes = await prizesModel.getAllPrizes();
+    res.json({ prizes });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
 // --- API: POST /api/prizes (เซฟทั้งชุด) ---
-// frontend จะส่ง { prizes: [...] } มา
-app.post("/api/prizes", (req, res) => {
+app.post("/api/prizes", async (req, res) => {
   const { prizes } = req.body;
   if (!Array.isArray(prizes)) {
     return res.status(400).json({ error: "prizes must be an array" });
   }
 
-  writePrizesToFile(prizes);
-  res.json({ ok: true });
+  try {
+    await prizesModel.resetPrizes(prizes);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
 // (ออปชันเสริม) endpoint สำหรับหมุนแล้วลดจำนวนทีละช่อง
-app.post("/api/prizes/:id/decrement", (req, res) => {
+app.post("/api/prizes/:id/decrement", async (req, res) => {
   const id = req.params.id;
-  const prizes = readPrizesFromFile();
-  const index = prizes.findIndex((p) => String(p.id) === String(id));
-
-  if (index === -1) {
-    return res.status(404).json({ error: "Prize not found" });
+  try {
+    const updatedPrize = await prizesModel.decrementPrizeQuantity(id);
+    if (!updatedPrize) {
+      // Could be not found or quantity was already 0
+      // For now, let's check if it exists to give better error
+      // But for simplicity/speed, if it returns null we can assume it failed to decrement
+      // However, the original code returned 404 if not found.
+      // Let's keep it simple: if null, we assume it didn't change (either not found or 0)
+      // To be strict with original logic:
+      const all = await prizesModel.getAllPrizes();
+      const exists = all.find(p => String(p.id) === String(id));
+      if (!exists) {
+        return res.status(404).json({ error: "Prize not found" });
+      }
+      // If exists but didn't decrement, it means quantity was 0
+      return res.json({ ok: true, prize: exists });
+    }
+    res.json({ ok: true, prize: updatedPrize });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
   }
-
-  if (prizes[index].quantity > 0) {
-    prizes[index].quantity -= 1;
-  }
-
-  writePrizesToFile(prizes);
-  res.json({ ok: true, prize: prizes[index] });
 });
 
 // --- Start server ---
